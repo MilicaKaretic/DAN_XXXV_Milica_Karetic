@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,11 +7,10 @@ namespace DAN_XXXV_Milica_Karetic
 {
     class Program
     {
-
         /// <summary>
         /// Valid positive int input
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Valid positive number</returns>
         public static int ValidPositiveNumber()
         {
             string s = Console.ReadLine();
@@ -29,7 +26,7 @@ namespace DAN_XXXV_Milica_Karetic
         }
 
         /// <summary>
-        /// Valid guess int input
+        /// Valid guess number input
         /// </summary>
         /// <returns>Number from 1 to 100</returns>
         public static int ValidGuessNumber()
@@ -47,7 +44,7 @@ namespace DAN_XXXV_Milica_Karetic
         }
 
         /// <summary>
-        /// 
+        /// Method that executes first thread
         /// </summary>
         public static void GetNumOfUsersAndNumber()
         {
@@ -56,6 +53,7 @@ namespace DAN_XXXV_Milica_Karetic
             Console.WriteLine("Please enter number to guess: [1-100]");
             guessNumber = ValidGuessNumber();
 
+            //task that creates threads
             Task<List<Thread>> task1 = Task.Run(() =>
             {
                 List<Thread> thread = new List<Thread>();
@@ -81,12 +79,15 @@ namespace DAN_XXXV_Milica_Karetic
                 }
                 return thread;
             });
+            //list of threads
             threads = task1.Result;
 
             Console.WriteLine("User entered number of participants\nUser created " + users + " participants\nUser entered number to guess.\n");    
         }
 
-        
+        /// <summary>
+        /// Method that executes each thread created by task generator
+        /// </summary>
         public static void GuessNumber()
         {
             string currentName = Thread.CurrentThread.Name;
@@ -101,6 +102,7 @@ namespace DAN_XXXV_Milica_Karetic
                     bool evenGuess = (guessNumber % 2 == 0 ? true : false);
 
                     Console.WriteLine(currentName + " tried to guess number. His number is " + num);
+
                     if ((num % 2 == 0 && evenGuess) || (num % 2 != 0 && !evenGuess))
                     {
                         Console.WriteLine(currentName + " guessed the parity of the number!\n");
@@ -117,10 +119,12 @@ namespace DAN_XXXV_Milica_Karetic
             }           
         }
 
+        //number of participants and number to guess
         public static int users, guessNumber;
-        public static bool guessed = false;
         public static Random rnd = new Random();
-        private static object l = new object();
+        //object to lock
+        public static readonly object l = new object();
+        //list of threads
         public static List<Thread> threads;
 
         static void Main(string[] args)
@@ -129,6 +133,7 @@ namespace DAN_XXXV_Milica_Karetic
             firstThread.Start();
             firstThread.Join();
 
+            //start created participants threads
             for (int i = 0; i < threads.Count; i++)
             {
                 threads[i].Start();               
